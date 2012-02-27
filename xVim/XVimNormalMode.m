@@ -153,12 +153,6 @@ typedef enum e_handle_stat
 {
     if (c == '\t' || c == 25) { return NO; } // Don't interpret tabs. Shift-Tab produce a char 25.
     if (c == XEsc) { [self reset]; return YES; } // Esc will reset everything
-    if (c == ':') { [controller switchToMode:ExMode subMode:NoSubMode]; }
-    if (c == '/') { [controller switchToMode:ExMode subMode:SearchSubMode]; }
-    if (c == '?') { [controller switchToMode:ExMode subMode:BackwardsSearchSubMode]; }
-    if (c == 'N') { [(XVimExModeHandler*)[controller handlerForMode:ExMode] repeatSearch:YES]; }
-    if (c == 'n') { [(XVimExModeHandler*)[controller handlerForMode:ExMode] repeatSearch:NO]; }
-    if (c == '&') { [(XVimExModeHandler*)[controller handlerForMode:ExMode] repeatCommand]; }
     
     // In this method, we check what kind of ch is 
     // and assign it to the proper member.
@@ -205,6 +199,13 @@ typedef enum e_handle_stat
     // 2. Check cmd.
     if (state == NotHandled)
     {
+        if (c == ':') { [controller switchToMode:ExMode subMode:NoSubMode]; return YES; }
+        if (c == '/') { [controller switchToMode:ExMode subMode:SearchSubMode]; return YES; }
+        if (c == '?') { [controller switchToMode:ExMode subMode:BackwardsSearchSubMode]; return YES; }
+        if (c == 'N') { [(XVimExModeHandler*)[controller handlerForMode:ExMode] repeatSearch:YES]; return YES; }
+        if (c == 'n') { [(XVimExModeHandler*)[controller handlerForMode:ExMode] repeatSearch:NO]; return YES; }
+        if (c == '&') { [(XVimExModeHandler*)[controller handlerForMode:ExMode] repeatCommand]; return YES; }
+        
         state = Execute;
         switch (ch)
         {

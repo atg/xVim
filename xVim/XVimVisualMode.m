@@ -165,12 +165,6 @@
     // Note : In my machine, Shift-Tab produce a character 25. 
     //        Don't know if it's the same in the other's machine.
     if (c == '\t' || c == 25) { return NO; } 
-    if (c == ':') { [controller switchToMode:ExMode subMode:NoSubMode]; }
-    if (c == '/') { [controller switchToMode:ExMode subMode:SearchSubMode]; }
-    if (c == '?') { [controller switchToMode:ExMode subMode:BackwardsSearchSubMode]; }
-    if (c == 'N') { [(XVimExModeHandler*)[controller handlerForMode:ExMode] repeatSearch:YES]; }
-    if (c == 'n') { [(XVimExModeHandler*)[controller handlerForMode:ExMode] repeatSearch:NO]; }
-    if (c == '&') { [(XVimExModeHandler*)[controller handlerForMode:ExMode] repeatCommand]; }
     
     dontCheckSel = YES;
     
@@ -229,6 +223,13 @@
     VimMode mode = NoSubMode;
     BOOL affectLines = isLineMode;
     if (count == 0) { count = 1; }
+    
+    if (c == ':') { [controller switchToMode:ExMode subMode:NoSubMode]; return YES; }
+    if (c == '/') { [controller switchToMode:ExMode subMode:SearchSubMode]; return YES; }
+    if (c == '?') { [controller switchToMode:ExMode subMode:BackwardsSearchSubMode]; return YES; }
+    if (c == 'N') { [(XVimExModeHandler*)[controller handlerForMode:ExMode] repeatSearch:YES]; return YES; }
+    if (c == 'n') { [(XVimExModeHandler*)[controller handlerForMode:ExMode] repeatSearch:NO]; return YES; }
+    if (c == '&') { [(XVimExModeHandler*)[controller handlerForMode:ExMode] repeatCommand]; return YES; }
     
     // 2. Commands
     switch (c)

@@ -5,7 +5,7 @@
 
 @interface XVimExModeHandler ()
 
-@property (retain) NSPopover* popover;
+@property (retain) id popover;
 
 - (void)showPrompt:(VimMode)submode;
 - (void)prompt:(NSTextField*)sender;
@@ -69,8 +69,10 @@
     NSString* delim = backwards ? @"\\?" : @"/";
     NSString* extractregex = [NSString stringWithFormat:@"^(([^%1$@]|\\\\%1$@)+)(%1$@([a-zA-Z]+))?(%1$@)?$", delim];
     NSError* error = nil;
-    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:extractregex options:0 error:&error];
-    NSTextCheckingResult* m = [regex firstMatchInString:cmd options:0 range:NSMakeRange(0, [cmd length])];
+    
+    // Chocolat throws a fit on 10.6 if NSRegularExpression or NSPopover are referenced directly
+    id regex = [NSClassFromString(@"NSRegularExpression") regularExpressionWithPattern:extractregex options:0 error:&error];
+    id m = [regex firstMatchInString:cmd options:0 range:NSMakeRange(0, [cmd length])];
     
     if (!m)
         return NSMakeRange(NSNotFound, 0);
@@ -113,7 +115,7 @@
             opts |= NSRegularExpressionDotMatchesLineSeparators;
     }
     
-    regex = [NSRegularExpression regularExpressionWithPattern:search options:opts error:&error];
+    regex = [NSClassFromString(@"NSRegularExpression") regularExpressionWithPattern:search options:opts error:&error];
     
     NSRange searchRange;
     if (!backwards) {
@@ -145,10 +147,10 @@
 }
 
 - (void)showPrompt:(VimMode)submode {
-    self.popover = [[[NSPopover alloc] init] autorelease];
-    popover.behavior = NSPopoverBehaviorSemitransient;
-    popover.animates = NO;
-    popover.appearance = NSPopoverAppearanceMinimal;
+    self.popover = [[[NSClassFromString(@"NSPopover") alloc] init] autorelease];
+    [popover setBehavior:NSPopoverBehaviorSemitransient];
+    [popover setAnimates:NO];
+    [popover setAppearance:NSPopoverAppearanceMinimal];
     NSViewController* vc = [[[NSViewController alloc] initWithNibName:nil bundle:nil] autorelease];
     
     CGFloat width = 350;
@@ -171,7 +173,7 @@
     
     [contentView addSubview:textField];
     [vc setView:contentView];
-    popover.contentViewController = vc;
+    [popover setContentViewController:vc];
     
     NSTextView* tv = [[controller bridge] targetView];    
     NSString* string = [[tv textStorage] string];

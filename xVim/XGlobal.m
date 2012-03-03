@@ -299,16 +299,6 @@ static HijackInfo s_hijackInfo_map[SUPPORTED_APP_COUNT] =
 -(BOOL) ignoreString:(NSString*) string selection:(NSRange) range
 {
     return NO;
-    
-    NSError* error;
-    NSRegularExpression* regex = 
-            [NSRegularExpression regularExpressionWithPattern:@"^/\\*.+\\*/$"
-                                                      options:NSRegularExpressionAnchorsMatchLines
-                                                        error:&error];
-    // In chocolat, tokens are like /* token */
-    return [regex numberOfMatchesInString:string
-                                  options:0
-                                    range:range] > 0;
 }
 
 @end

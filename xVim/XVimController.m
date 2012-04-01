@@ -190,6 +190,10 @@ NSArray* keyStringTokeyArray(NSString* string)
                    [NSNumber numberWithInt:NSPageDownFunctionKey],     @"PageDown",
                    nil];
     
+
+    // This is actually quite slow, so I'm disabling it for now
+#ifndef VIM_COOPERATIVE
+    
     // Read the key mapping.
     // The key mapping syntax is like: {[niv]} {originalKey} {mappedKey}
     NSString* keymapPath = [[NSBundle bundleWithIdentifier:@"com.warwithinme.xvim"] pathForResource:@"keymap" ofType:nil];
@@ -224,6 +228,7 @@ NSArray* keyStringTokeyArray(NSString* string)
         DLog(@"Insert mode dict %@", keyMapDicts[InsertMode]);
     }
     [keymapData release];
+#endif
 }
 
 -(XVimController*) initWithBridge:(XTextViewBridge*) b

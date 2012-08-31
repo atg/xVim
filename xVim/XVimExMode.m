@@ -194,7 +194,7 @@
 
         unichar ch = [string characterAtIndex:start];
         if ((ch >= 0xA && ch <= 0xD) || ch == 0x85) {
-            posRect.size.width = 0;
+            posRect.size.width = 1;
         }
     }
     

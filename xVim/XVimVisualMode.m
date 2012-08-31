@@ -22,7 +22,7 @@
     
     int count;
     unichar cmd;
-    NSTextView* hijackedView;
+    __weak NSTextView* hijackedView;
 }
 -(void) switchToMode:(VimMode) mode;
 -(NSRange) linewiseRange;
@@ -47,8 +47,12 @@
     
     xv_set_index(start);
     start = xv_0();
-    xv_set_index(end);
-    end = xv_dollar_inc();
+    
+    if (!testNewLine([[[hijackedView textStorage] string] characterAtIndex:end - 1]))
+    {
+        xv_set_index(end);
+        end = xv_dollar_inc();
+    }
     return NSMakeRange(start, end - start);
 }
 -(NSRange) characterwiseRange
@@ -164,7 +168,13 @@
     // Don't interpret tabs.
     // Note : In my machine, Shift-Tab produce a character 25. 
     //        Don't know if it's the same in the other's machine.
-    if (c == '\t' || c == 25) { return NO; } 
+    if (c == XTab || c == XShiftTab) { return NO; } 
+    if (c == ':') { [controller switchToMode:ExMode subMode:NoSubMode]; }
+    if (c == '/') { [controller switchToMode:ExMode subMode:SearchSubMode]; }
+    if (c == '?') { [controller switchToMode:ExMode subMode:BackwardsSearchSubMode]; }
+    if (c == 'N') { [(XVimExModeHandler*)[controller handlerForMode:ExMode] repeatSearch:YES]; }
+    if (c == 'n') { [(XVimExModeHandler*)[controller handlerForMode:ExMode] repeatSearch:NO]; }
+    if (c == '&') { [(XVimExModeHandler*)[controller handlerForMode:ExMode] repeatCommand]; }
     
     dontCheckSel = YES;
     

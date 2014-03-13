@@ -42,7 +42,7 @@
  * we can use XTextViewDelegate and there's no need to hijack the delgate's method.
  */
 @interface XTextViewDelegate : NSObject <NSTextViewDelegate>
-- (NSArray*) textView:(NSTextView*) view willChangeSelectionFromCharacterRanges:(NSArray*) old toCharacterRanges:(NSArray*) new;
+- (NSArray*) textView:(NSTextView*) view willChangeSelectionFromCharacterRanges:(NSArray*) old toCharacterRanges:(NSArray*) newTV;
 - (void)textViewDidChangeSelection:(NSNotification*) aNotification;
 @end
 

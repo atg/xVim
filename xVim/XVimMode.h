@@ -76,7 +76,7 @@
 @interface XVimExModeHandler : XVimModeHandler
 @property (retain) NSString* lastSearch;
 @property (retain) NSString* lastCommand;
-@property (assign) BOOL lastSearchWasForwards;
+@property BOOL lastSearchWasForwards;
 
 - (void)repeatSearch:(BOOL)reverse;
 - (void)repeatCommand;

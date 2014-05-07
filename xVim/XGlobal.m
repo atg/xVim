@@ -49,11 +49,11 @@ NSMutableDictionary* bridgeDict = 0;
 
 void associateBridgeAndView(XTextViewBridge* b, NSTextView* tv)
 {
-    [bridgeDict setObject:b forKey:[NSValue valueWithPointer:tv]];
+    [bridgeDict setObject:b forKey:[NSValue valueWithNonretainedObject:tv]];
 }
 XTextViewBridge* getBridgeForView(NSTextView* tv)
 {
-    XTextViewBridge* b = [bridgeDict objectForKey:[NSValue valueWithPointer:tv]];
+    XTextViewBridge* b = [bridgeDict objectForKey:[NSValue valueWithNonretainedObject:tv]];
     if (b == nil && createBridgeWhenNeeded)
     {
         DLog(@"Creating a new bridge when needed");
@@ -64,19 +64,19 @@ XTextViewBridge* getBridgeForView(NSTextView* tv)
 }
 void removeBridgeForView(NSTextView* tv)
 {
-    [bridgeDict removeObjectForKey:[NSValue valueWithPointer:tv]];
+    [bridgeDict removeObjectForKey:[NSValue valueWithNonretainedObject:tv]];
 }
 
 
 // Original methods:
-typedef void  (*O_Finalize)                  (void*, SEL);
-typedef void  (*O_Dealloc)                   (void*, SEL);
-typedef void  (*O_KeyDown)                   (void*, SEL, NSEvent*);
+typedef void  (*O_Finalize)                  (id __unsafe_unretained, SEL);
+typedef void  (*O_Dealloc)                   (id __unsafe_unretained, SEL);
+typedef void  (*O_KeyDown)                   (id __unsafe_unretained, SEL, NSEvent*);
 typedef void  (*O__DrawInsertionPointInRect) (NSTextView*, SEL, NSRect, NSColor*); // This one is for private api.
 typedef void  (*O_DrawInsertionPointInRect)  (NSTextView*, SEL, NSRect, NSColor*, BOOL);
-typedef void* (*O_WillChangeSelection)       (void*, SEL, NSTextView*, NSArray* oldRanges, NSArray* newRanges);
-typedef void  (*O_TextViewDidChangeSelection)(void*, SEL, NSNotification*);
-typedef void* (*O_SelRangeForProposedRange)  (NSTextView*, SEL, NSRange, NSSelectionGranularity);
+typedef id (*O_WillChangeSelection)       (id __unsafe_unretained, SEL, NSTextView*, NSArray* oldRanges, NSArray* newRanges);
+typedef void  (*O_TextViewDidChangeSelection)(id __unsafe_unretained, SEL, NSNotification*);
+typedef id (*O_SelRangeForProposedRange)  (NSTextView*, SEL, NSRange, NSSelectionGranularity);
 static O_Finalize                  orig_finalize            = 0;
 static O_Dealloc                   orig_dealloc             = 0;
 static O_KeyDown                   orig_keyDown             = 0;
@@ -87,29 +87,29 @@ static O_TextViewDidChangeSelection orig_didChangeSelection = 0;
 static O_SelRangeForProposedRange  orig_selRangeForProposedRange = 0;
 // Hijackers:
 // void  configureInsertionPointRect(NSTextView* view, NSRect*);
-static void  hj_finalize(void*, SEL);
-static void  hj_dealloc(void*, SEL);
-static void  hj_keyDown(void*, SEL, NSEvent*);
+static void  hj_finalize(id __unsafe_unretained, SEL);
+static void  hj_dealloc(id __unsafe_unretained, SEL);
+static void  hj_keyDown(id __unsafe_unretained, SEL, NSEvent*);
 static void  hj_DIPIR_private(NSTextView*, SEL, NSRect, NSColor*);
 static void  hj_DIPIR(NSTextView*, SEL, NSRect, NSColor*, BOOL);
-static void* hj_willChangeSelection(void*, SEL, NSTextView*, NSArray* oldRanges, NSArray* newRanges);
-static void  hj_didChangeSelection(void*, SEL, NSNotification*);
-static void* hj_selRangeForProposedRange(NSTextView*, SEL, NSRange, NSSelectionGranularity);
+static id hj_willChangeSelection(id __unsafe_unretained, SEL, NSTextView*, NSArray* oldRanges, NSArray* newRanges);
+static void  hj_didChangeSelection(id __unsafe_unretained, SEL, NSNotification*);
+static id hj_selRangeForProposedRange(NSTextView*, SEL, NSRange, NSSelectionGranularity);
 
 // Special init methods:
 static void* orig_init = 0;
 
-typedef void* (*O_Init)          (void*, SEL);
-typedef void* (*O_InitWithCoder) (void*, SEL, void*);
-typedef void* (*O_InitWithFrame) (void*, SEL, NSRect);
-typedef void* (*O_InitWithFTC)   (void*, SEL, NSRect, void*);
-typedef void* (*O_InitWithFM)    (void*, SEL, NSRect, BOOL);
+typedef id (*O_Init)          (id __unsafe_unretained, SEL);
+typedef id (*O_InitWithCoder) (id __unsafe_unretained, SEL, id);
+typedef id (*O_InitWithFrame) (id __unsafe_unretained, SEL, NSRect);
+typedef id (*O_InitWithFTC)   (id __unsafe_unretained, SEL, NSRect, id);
+typedef id (*O_InitWithFM)    (id __unsafe_unretained, SEL, NSRect, BOOL);
 
-static void* hj_init          (void*, SEL);
-static void* hj_initWithCoder (void*, SEL, void*);
-static void* hj_initWithFrame (void*, SEL, NSRect);
-static void* hj_initWithFTC   (void*, SEL, NSRect, void*);
-static void* hj_initWithFM    (void*, SEL, NSRect, BOOL);
+static id hj_init          (id __unsafe_unretained, SEL);
+static id hj_initWithCoder (id __unsafe_unretained, SEL, id);
+static id hj_initWithFrame (id __unsafe_unretained, SEL, NSRect);
+static id hj_initWithFTC   (id __unsafe_unretained, SEL, NSRect, id);
+static id hj_initWithFM    (id __unsafe_unretained, SEL, NSRect, BOOL);
 
 
 // Hijack info:
@@ -118,7 +118,7 @@ typedef struct s_HijackInfo {
     NSString* textViewSubclassName;
     NSString* delegateClassName;     // Can be nil
     
-    void*     initHijackFunc;        // If this is nil, 
+    void*     initHijackFunc;        // If this is nil,
                                      // we create the bridge the first time we need it.
     NSString* initSelectorName;      // This can be nil if initHijackFunc is nil.
     
@@ -354,27 +354,27 @@ void hj_DIPIR(NSTextView* self, SEL sel, NSRect rect, NSColor* color, BOOL turne
     orig_DIPIR(self, sel, rect, color, turnedOn);
 }
 
-void hj_finalize(void* self, SEL sel)
+void hj_finalize(id __unsafe_unretained self, SEL sel)
 {
     DLog(@"HJ_Finalize");
     removeBridgeForView(self);
     if(orig_finalize) orig_finalize(self, sel);
 }
 
-void hj_dealloc(void* self, SEL sel)
+void hj_dealloc(id __unsafe_unretained self, SEL sel)
 {
     DLog(@"Hj_Dealloc");
     removeBridgeForView(self);
     if(orig_dealloc) orig_dealloc(self, sel);
 }
 
-void hj_keyDown(void* self, SEL sel, NSEvent* event)
+void hj_keyDown(id __unsafe_unretained self, SEL sel, NSEvent* event)
 {
     DLog(@"HJ_KeyDown");
     [getBridgeForView(self) processKeyEvent:event];
 }
 
-void* hj_willChangeSelection(void* self, SEL sel, NSTextView* view, NSArray* oldRanges, NSArray* newRanges)
+id hj_willChangeSelection(id __unsafe_unretained self, SEL sel, NSTextView* view, NSArray* oldRanges, NSArray* newRanges)
 {
     XTextViewBridge* bridge = getBridgeForView(view);
     if (bridge != nil) {
@@ -384,7 +384,7 @@ void* hj_willChangeSelection(void* self, SEL sel, NSTextView* view, NSArray* old
     return newRanges;
 }
 
-void hj_didChangeSelection(void* self, SEL sel, NSNotification* n)
+void hj_didChangeSelection(id __unsafe_unretained self, SEL sel, NSNotification* n)
 {
     XTextViewBridge* bridge = getBridgeForView([n object]);
     if (bridge != nil) {
@@ -393,7 +393,7 @@ void hj_didChangeSelection(void* self, SEL sel, NSNotification* n)
     if (orig_didChangeSelection) { orig_didChangeSelection(self, sel, n); }
 }
 
-void* hj_selRangeForProposedRange(NSTextView* self, SEL sel, NSRange proposed, NSSelectionGranularity g)
+id hj_selRangeForProposedRange(NSTextView* self, SEL sel, NSRange proposed, NSSelectionGranularity g)
 {
     [[getBridgeForView(self) vimController] selRangeForProposed:proposed];
     return orig_selRangeForProposedRange(self, sel, proposed, g);
@@ -401,7 +401,7 @@ void* hj_selRangeForProposedRange(NSTextView* self, SEL sel, NSRange proposed, N
 
 
 // ========== Special Init Methods ==========
-static void* hj_init(void* self, SEL sel)
+static id hj_init(id __unsafe_unretained self, SEL sel)
 {
     DLog(@"HJ_init");
     
@@ -418,10 +418,10 @@ static void* hj_init(void* self, SEL sel)
     }
     if (delegate != nil) { [r setDelegate:delegate]; }
     
-    return r;
+    return CFBridgingRetain(r);
 }
 
-static void* hj_initWithCoder(void* self, SEL sel, void* p1)
+static id hj_initWithCoder(id __unsafe_unretained self, SEL sel, id p1)
 {
     DLog(@"HJ_initWithCoder");
     
@@ -438,10 +438,10 @@ static void* hj_initWithCoder(void* self, SEL sel, void* p1)
     }
     if (delegate != nil) { [r setDelegate:delegate]; }
     
-    return r;
+    return CFBridgingRetain(r);
 }
 
-static void* hj_initWithFrame(void* self, SEL sel, NSRect p1)
+static id hj_initWithFrame(id __unsafe_unretained self, SEL sel, NSRect p1)
 {
     DLog(@"HJ_initWithFrame");
     
@@ -458,10 +458,10 @@ static void* hj_initWithFrame(void* self, SEL sel, NSRect p1)
     }
     if (delegate != nil) { [r setDelegate:delegate]; }
     
-    return r;
+    return CFBridgingRetain(r);
 }
 
-static void* hj_initWithFTC(void* self, SEL sel, NSRect p1, void* p2)
+static id hj_initWithFTC(id __unsafe_unretained self, SEL sel, NSRect p1, id p2)
 {
     DLog(@"HJ_initWithFTC");
     
@@ -478,10 +478,10 @@ static void* hj_initWithFTC(void* self, SEL sel, NSRect p1, void* p2)
     }
     if (delegate != nil) { [r setDelegate:delegate]; }
     
-    return r;
+    return CFBridgingRetain(r);
 }
 
-static void* hj_initWithFM(void* self, SEL sel, NSRect p1, BOOL makeFieldEditor)
+static id hj_initWithFM(id __unsafe_unretained self, SEL sel, NSRect p1, BOOL makeFieldEditor)
 {
     DLog(@"HJ_initWithFM");
     
@@ -498,7 +498,7 @@ static void* hj_initWithFM(void* self, SEL sel, NSRect p1, BOOL makeFieldEditor)
     }
     if (delegate != nil) { [r setDelegate:delegate]; }
     
-    return r;
+    return CFBridgingRetain(r);
 }
 
 #endif

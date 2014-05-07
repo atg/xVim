@@ -5,7 +5,7 @@
 
 @interface XVimExModeHandler ()
 
-@property (retain) id popover;
+@property NSPopover* popover;
 
 - (void)showPrompt:(VimMode)submode;
 - (void)prompt:(NSTextField*)sender;
@@ -147,7 +147,7 @@
 }
 
 - (void)showPrompt:(VimMode)submode {
-    self.popover = [[[NSClassFromString(@"NSPopover") alloc] init] autorelease];
+    self.popover = [[[NSPopover alloc] init] autorelease];
     [popover setBehavior:NSPopoverBehaviorSemitransient];
     [popover setAnimates:NO];
     [popover setAppearance:NSPopoverAppearanceMinimal];

@@ -29,6 +29,8 @@
 - (void)textViewDidChangeSelection:(NSNotification *)notif;
 - (BOOL)drawCursor:(NSRect)r;
 
+- (NSString*)vimModeName;
+
 @end
 
 

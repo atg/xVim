@@ -150,9 +150,8 @@ NSArray* keyStringTokeyArray(NSString* string)
 
 @implementation XVimController
 
--(void) finalize { 
+-(void) dealloc {
     if (timerStarted) { [self stopKeymapTimer]; }
-    [super finalize];
 }
 
 +(void) load 
@@ -251,8 +250,7 @@ NSArray* keyStringTokeyArray(NSString* string)
 
 -(void) dealloc
 {
-    [inputBuffer release];
-    for (int i = 0; i < VimModeCount; ++i) { [handlers[i] release]; }
+    for (int i = 0; i < VimModeCount; ++i) {  }
 }
 
 -(NSString*) yankContent:(BOOL*)isWholeLine 

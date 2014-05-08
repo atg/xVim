@@ -258,8 +258,7 @@ static HijackInfo s_hijackInfo_map[SUPPORTED_APP_COUNT] =
     return self;
 }
 
--(void)    dealloc  { DLog(@"Deallocing XTexViewBridge: %@", self); [controller release]; }
--(void)    finalize { DLog(@"XTextViewBridge Finalized"); [super finalize]; }
+-(void)    dealloc  { DLog(@"Deallocing XTexViewBridge: %@", self);  }
 -(void)    processKeyEvent:(NSEvent*)event { [controller processKeyEvent:event]; }
 -(BOOL)    closePopup { return NO; }
 
@@ -415,11 +414,10 @@ static id hj_init(id __unsafe_unretained self, SEL sel)
     
     if (bridge != nil) {
         associateBridgeAndView(bridge, r);
-        [bridge release];
     }
     if (delegate != nil) { [r setDelegate:delegate]; }
     
-    return CFBridgingRetain(r);
+    return CFBridgingRelease(CFBridgingRetain(r));
 }
 
 static id hj_initWithCoder(id __unsafe_unretained self, SEL sel, id p1)
@@ -435,11 +433,10 @@ static id hj_initWithCoder(id __unsafe_unretained self, SEL sel, id p1)
     
     if (bridge != nil) {
         associateBridgeAndView(bridge, r);
-        [bridge release];
     }
     if (delegate != nil) { [r setDelegate:delegate]; }
     
-    return CFBridgingRetain(r);
+    return CFBridgingRelease(CFBridgingRetain(r));
 }
 
 static id hj_initWithFrame(id __unsafe_unretained self, SEL sel, NSRect p1)
@@ -455,11 +452,10 @@ static id hj_initWithFrame(id __unsafe_unretained self, SEL sel, NSRect p1)
     
     if (bridge != nil) {
         associateBridgeAndView(bridge, r);
-        [bridge release];
     }
     if (delegate != nil) { [r setDelegate:delegate]; }
     
-    return CFBridgingRetain(r);
+    return CFBridgingRelease(CFBridgingRetain(r));
 }
 
 static id hj_initWithFTC(id __unsafe_unretained self, SEL sel, NSRect p1, id p2)
@@ -475,11 +471,10 @@ static id hj_initWithFTC(id __unsafe_unretained self, SEL sel, NSRect p1, id p2)
     
     if (bridge != nil) {
         associateBridgeAndView(bridge, r);
-        [bridge release];
     }
     if (delegate != nil) { [r setDelegate:delegate]; }
     
-    return CFBridgingRetain(r);
+    return CFBridgingRelease(CFBridgingRetain(r));
 }
 
 static id hj_initWithFM(id __unsafe_unretained self, SEL sel, NSRect p1, BOOL makeFieldEditor)
@@ -495,11 +490,10 @@ static id hj_initWithFM(id __unsafe_unretained self, SEL sel, NSRect p1, BOOL ma
     
     if (bridge != nil) {
         associateBridgeAndView(bridge, r);
-        [bridge release];
     }
     if (delegate != nil) { [r setDelegate:delegate]; }
     
-    return CFBridgingRetain(r);
+    return CFBridgingRelease(CFBridgingRetain(r));
 }
 
 #endif

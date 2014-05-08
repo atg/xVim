@@ -245,7 +245,6 @@
             [hijackedView insertText:regStr
                     replacementRange:selection];
             
-            [regStr release];
             
             mode = NormalMode;
             caretIdx = [hijackedView selectedRange].location + regStr.length;

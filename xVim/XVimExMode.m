@@ -147,18 +147,18 @@
 }
 
 - (void)showPrompt:(VimMode)submode {
-    self.popover = [[[NSPopover alloc] init] autorelease];
+    self.popover = [[NSPopover alloc] init];
     [popover setBehavior:NSPopoverBehaviorSemitransient];
     [popover setAnimates:NO];
     [popover setAppearance:NSPopoverAppearanceMinimal];
-    NSViewController* vc = [[[NSViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+    NSViewController* vc = [[NSViewController alloc] initWithNibName:nil bundle:nil];
     
     CGFloat width = 350;
     CGFloat height = 22;
     CGFloat margin = 8;
     
-    NSView* contentView = [[[NSView alloc] initWithFrame:NSMakeRect(0, 0, width + margin * 2, height + margin * 2)] autorelease];
-    NSTextField* textField = [[[NSTextField alloc] initWithFrame:NSMakeRect(margin, margin, width, height)] autorelease];
+    NSView* contentView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width + margin * 2, height + margin * 2)];
+    NSTextField* textField = [[NSTextField alloc] initWithFrame:NSMakeRect(margin, margin, width, height)];
     [textField setTarget:self];
     [textField setAction:@selector(prompt:)];
     [textField setFont:[NSFont fontWithName:@"Monaco" size:11]];

@@ -5,11 +5,14 @@
 
 #ifdef __LP64__
 
-#import "XGlobal.h"
-#import "XVimMode.h"
-#import "XVimController.h"
-#import "XTextViewBridge.h"
-#import "vim.h"
+extern "C" {
+    #import "XGlobal.h"
+    #import "XVimMode.h"
+    #import "XVimController.h"
+    #import "XTextViewBridge.h"
+    #import "vim.h"
+}
+
 #import "NSStringHelper.h"
 
 typedef enum e_affect_range

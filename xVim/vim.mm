@@ -5,8 +5,10 @@
 
 #ifdef __LP64__
 
-#import "XGlobal.h"
-#import "vim.h"
+extern "C" {
+    #import "XGlobal.h"
+    #import "vim.h"
+}
 #import "NSStringHelper.h"
 
 BOOL testDigit(unichar ch) { return ch >= '0' && ch <= '9'; }

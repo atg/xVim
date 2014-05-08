@@ -9,6 +9,8 @@
  * NSStringHelper is used to provide fast character iteration.
 */
 
+#ifdef __cplusplus
+
 typedef struct s_NSStringHelper
 {
     unichar    buffer[ITERATE_STRING_BUFFER_SIZE];
@@ -17,6 +19,13 @@ typedef struct s_NSStringHelper
     NSInteger  index;
     
 } NSStringHelper;
+
+#else
+
+struct s_NSStringHelper;
+typedef struct s_NSStringHelper NSStringHelper;
+
+#endif
 
 void initNSStringHelper(NSStringHelper*, NSString* string, NSUInteger strLen);
 void initNSStringHelperBackward(NSStringHelper*, NSString* string, NSUInteger strLen);

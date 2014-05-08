@@ -113,6 +113,7 @@ static id hj_initWithFM    (id __unsafe_unretained, SEL, NSRect, BOOL);
 
 
 // Hijack info:
+/*
 typedef struct s_HijackInfo {
     NSString* bridgeClassName;       // Can be nil
     NSString* textViewSubclassName;
@@ -152,7 +153,7 @@ static HijackInfo s_hijackInfo_map[SUPPORTED_APP_COUNT] =
         nil,
         @"com.chocolatapp.Chocolat"} // Chocolat use GC, but finalize never calls.
 };
-
+*/
 
 // The entry point of this plugin.
 // In the load method, we call XXXBridge's(subclass of XTextViewBridge) hijack class method

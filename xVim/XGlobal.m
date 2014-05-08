@@ -11,6 +11,9 @@
 #import "XVimController.h"
 #import <objc/runtime.h>
 
+#import "CHFullTextView.h"
+#import "CHTextViewController.h"
+
 
 // Hijacking parameters
 static Class bridgeClass = nil;
@@ -241,18 +244,19 @@ static HijackInfo s_hijackInfo_map[SUPPORTED_APP_COUNT] =
 {
 @private
     XVimController*    controller;
-    __weak NSTextView* targetView;
+    __weak CHTextViewController* tvc;
+//    __weak NSTextView* targetView;
 }
 @end
 @implementation XTextViewBridge
 
--(NSTextView*)     targetView    { return targetView; }
+-(NSTextView*)     targetView    { return tvc.textView; }
 -(XVimController*) vimController { return controller; }
 
--(XTextViewBridge*) initWithTextView:(NSTextView*) view
+-(XTextViewBridge*) initWithTextView:(CHFullTextView*) view
 {
     if (self = [super init]) {
-        targetView = view; // Must assigned this before creating the XVimController.
+        tvc = view.controller; // Must assigned this before creating the XVimController.
         controller = [[XVimController alloc] initWithBridge:self];
     }
     return self;
@@ -263,14 +267,14 @@ static HijackInfo s_hijackInfo_map[SUPPORTED_APP_COUNT] =
 -(BOOL)    closePopup { return NO; }
 
 -(void) handleFakeKeyEvent:(NSEvent*) fakeEvent {
-    
+    CHFullTextView* tv = (CHFullTextView*)(self.targetView);
     // Give them a chance to cooperate with us
-    if ([self->targetView respondsToSelector:@selector(handleVimKeyEvent:)]) {
-        [self->targetView performSelector:@selector(handleVimKeyEvent:) withObject:fakeEvent];
+    if ([tv respondsToSelector:@selector(handleVimKeyEvent:)]) {
+        [tv performSelector:@selector(handleVimKeyEvent:) withObject:fakeEvent];
     }
     // Pleading the 5th? Hit 'em with the swizzle stick. 
     else if (orig_keyDown) {
-        orig_keyDown(self->targetView, @selector(keyDown:), fakeEvent);
+        orig_keyDown(tv, @selector(keyDown:), fakeEvent);
     }
 }
 

@@ -248,11 +248,6 @@ NSArray* keyStringTokeyArray(NSString* string)
     return self;
 }
 
--(void) dealloc
-{
-    for (int i = 0; i < VimModeCount; ++i) {  }
-}
-
 -(NSString*) yankContent:(BOOL*)isWholeLine 
 { 
     if (isWholeLine) { *isWholeLine = killBufferIsWholeLine; }
